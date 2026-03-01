@@ -1,6 +1,6 @@
 export async function onRequest(context) {
     const API_KEY = "37019|udH6Fb4IC7cV942W6q6nIZl2qIsWR8Ep4YXVIygV68139ae4";
-    const TRACKING_ID = "SnapViewer";
+    const TRACKING_ID = "Rocket";
     const request = context.request;
     let userCountry = request.cf?.country || 'US'; 
     const userIP = request.headers.get('CF-Connecting-IP') || '1.1.1.1';
