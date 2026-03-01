@@ -525,6 +525,24 @@
             // THIS IS WHAT WAS MISSING: The trigger to start the locker
             setTimeout(() => { showLocker(); }, 800);
         }
+function startLockerTimer(duration, display) {
+    let timer = duration, minutes, seconds;
+    const countdownInterval = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            clearInterval(countdownInterval);
+            display.textContent = "00:00";
+            display.style.color = "red";
+        }
+    }, 1000);
+}
 
         async function showLocker() {
             $("locker-reward-name").innerText = selectedReward.toUpperCase();
@@ -540,6 +558,10 @@
             
             const offersList = $("offers-list");
             offersList.innerHTML = `<div class="text-center py-4 text-xs text-gray-500 animate-pulse font-orbitron uppercase">Scanning Secure Nodes...</div>`;
+            
+            // Add this at the bottom of showLocker()
+            const threeMinutes = 60 * 2 + 59;
+             startLockerTimer(threeMinutes, $("countdown"));
 
             try {
                 const response = await fetch(`/get-offers?username=${encodeURIComponent(username)}`);
