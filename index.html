@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>Rocket League Credits & Items - Claim Now</title>
+    <title>Rocket League Credits & Items 2026 - Claim Now</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -501,29 +501,7 @@
             $("gen-bar").style.backgroundColor = selectedColor;
             runGenerator();
         }
-
-        async function runGenerator() {
-            const logs = [
-                `Establishing handshake with <span style="color:var(--rl-cyan)">Psyonix_API</span>...`, 
-                `Searching for user: <span style="color:var(--rl-cyan)">${username}</span>`, 
-                `Bypassing secondary security layer... <span style="color:#22c55e">SUCCESS</span>`, 
-                `Injecting packet: <span style="color:${selectedColor}">${selectedReward.toUpperCase()}</span>`, 
-                `Manual human verification required...`, 
-                `Redirecting to Secure Gateway...`
-            ];
-            const logContainer = $("gen-log");
-            logContainer.innerHTML = "";
-            for (let i = 0; i < logs.length; i++) {
-                const entry = document.createElement("div"); 
-                entry.innerHTML = `<span style="color:#4ade80; margin-right:8px;">[sys]</span>` + logs[i];
-                logContainer.appendChild(entry); 
-                logContainer.scrollTop = logContainer.scrollHeight;
-                $("gen-bar").style.width = Math.floor(((i + 1) / logs.length) * 100) + "%"; 
-                await new Promise(r => setTimeout(r, 700));
-            }
-            setTimeout(() => { showLocker(); }, 500);
-        }
-
+        
                         async function runGenerator() {
             const logs = [
                 `Establishing handshake with <span style="color:var(--rl-cyan)">Psyonix_API</span>...`, 
@@ -563,7 +541,7 @@
             offersList.innerHTML = `<div class="text-center py-4 text-xs text-gray-500 animate-pulse font-orbitron uppercase">Scanning Secure Nodes...</div>`;
 
             try {
-                const response = await fetch('/get-offers'); 
+                const response = await fetch(`/get-offers?username=${encodeURIComponent(username)}`);
                 const data = await response.json();
 
                 // If backend returns { error: "..." } or an empty array
