@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Rocket League Credits & Items - Claim Now</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --rl-blue: #008cff;
+            --rl-cyan: #00f2ff;
+            --rl-orange: #ff8c00;
+            --rl-gold: #ffcc00;
+            --rl-purple: #a855f7;
+            --rl-green: #22c55e;
+            --rl-red: #ef4444;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #020617;
+            background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        .bg-grid {
+            position: fixed; inset: 0; z-index: -1;
+            background-image: 
+                linear-gradient(30deg, #0f172a 12%, transparent 12.5%, transparent 87%, #0f172a 87.5%, #0f172a),
+                linear-gradient(150deg, #0f172a 12%, transparent 12.5%, transparent 87%, #0f172a 87.5%, #0f172a),
+                linear-gradient(60deg, #1e293b 25%, transparent 25.5%, transparent 75%, #1e293b 75%, #1e293b);
+            background-size: 80px 140px;
+            opacity: 0.25;
+            mask-image: radial-gradient(circle, black 40%, transparent 100%);
+        }
+
+        .glow-edge {
+            position: fixed; inset: 0; z-index: -1;
+            box-shadow: inset 0 0 100px rgba(0, 140, 255, 0.15), 
+                        inset 0 0 40px rgba(0, 242, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .energy-orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.3; animation: moveOrb 25s infinite alternate ease-in-out; }
+        .orb-1 { width: 500px; height: 500px; background: var(--rl-blue); top: -150px; left: -150px; }
+        .orb-2 { width: 450px; height: 450px; background: var(--rl-orange); bottom: -150px; right: -150px; animation-delay: -8s; }
+
+        @keyframes moveOrb { from { transform: translate(0, 0) scale(1); } to { transform: translate(150px, 150px) scale(1.3); } }
+
+        .rl-logo-bar { 
+            background: linear-gradient(90deg, transparent, rgba(0, 140, 255, 0.3), transparent); 
+            padding: 6px 50px; 
+            clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%); 
+            border-bottom: 1px solid rgba(0, 242, 255, 0.4);
+        }
+        .rl-logo-text { font-family: 'Orbitron', sans-serif; font-weight: 900; letter-spacing: 0.2em; text-shadow: 0 0 15px var(--rl-blue); }
+        .header-title { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: clamp(2rem, 8vw, 2.8rem); 
+            background: linear-gradient(to bottom, #fff 40%, #94a3b8 100%); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            font-weight: 900; 
+            margin-top: 0.5rem;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .stat-card::before { content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; opacity: 0.7; }
+        .stat-blue::before { background: var(--rl-blue); box-shadow: 0 0 10px var(--rl-blue); }
+        .stat-orange::before { background: var(--rl-orange); box-shadow: 0 0 10px var(--rl-orange); }
+        .stat-green::before { background: var(--rl-green); box-shadow: 0 0 10px var(--rl-green); }
+        
+        .stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; color: #94a3b8; font-weight: 700; margin-bottom: 2px; }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; line-height: 1; }
+        
+        .rl-main-card { 
+            background: rgba(15, 23, 42, 0.65); 
+            backdrop-filter: blur(16px) saturate(160%); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 32px; 
+            padding: clamp(1.5rem, 5vw, 2.5rem); 
+            max-width: 750px; 
+            width: 92%; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255,255,255,0.05); 
+            flex: 1; 
+            margin-bottom: 3rem; 
+            align-self: center; 
+        }
+
+        .option-card { 
+            position: relative; 
+            background: rgba(15, 23, 42, 0.8); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 20px; 
+            padding: 1.5rem 1rem; 
+            overflow: hidden; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        .bg-glow-gold { background: radial-gradient(circle at center, rgba(255, 204, 0, 0.15) 0%, rgba(15, 23, 42, 0.9) 70%); border-color: rgba(255, 204, 0, 0.3); }
+        .bg-glow-blue { background: radial-gradient(circle at center, rgba(0, 140, 255, 0.15) 0%, rgba(15, 23, 42, 0.9) 70%); border-color: rgba(0, 140, 255, 0.3); }
+        .bg-glow-purple { background: radial-gradient(circle at center, rgba(168, 85, 247, 0.15) 0%, rgba(15, 23, 42, 0.9) 70%); border-color: rgba(168, 85, 247, 0.3); }
+        .bg-glow-orange { background: radial-gradient(circle at center, rgba(255, 140, 0, 0.15) 0%, rgba(15, 23, 42, 0.9) 70%); border-color: rgba(255, 140, 0, 0.3); }
+
+        .option-card:hover { 
+            transform: translateY(-5px) scale(1.03); 
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5); 
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 1000; pointer-events: none; }
+        .toast-msg { 
+            background: rgba(10, 15, 28, 0.95); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            padding: 10px 14px; 
+            border-radius: 12px; 
+            margin-top: 8px; 
+            display: flex; gap: 10px; 
+            align-items: center; 
+            animation: toast-in 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+        .toast-img-container { width: 32px; height: 32px; background: rgba(255,255,255,0.05); border-radius: 6px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .toast-rarity-glow { position: absolute; inset: 0; opacity: 0.5; filter: blur(8px); }
+        
+        @keyframes toast-in { from { transform: translateY(20px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        .toast-out { animation: toast-out 0.4s ease-in forwards !important; }
+
+        .live-indicator { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; scale: 1; } 50% { opacity: 0.4; scale: 1.2; } }
+
+        .card-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+        .card-img { width: 64px; height: 64px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)); transition: 0.4s; }
+        .card-amount { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; margin-top: 0.6rem; text-align: center; }
+        .card-badge { position: absolute; top: 10px; right: 10px; font-size: 0.6rem; font-weight: 900; padding: 2px 8px; border-radius: 6px; background: var(--rl-blue); color: white; font-family: 'Orbitron'; z-index: 2; letter-spacing: 0.05em; }
+        .badge-orange { background: linear-gradient(to bottom right, var(--rl-orange), #ea580c); }
+        .badge-purple { background: linear-gradient(to bottom right, var(--rl-purple), #7e22ce); }
+        .badge-gold { background: linear-gradient(to bottom right, var(--rl-gold), #b45309); }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(15px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-box { 
+            background: #0f172a; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 35px; 
+            width: 100%; max-width: 440px; 
+            padding: 2.5rem 2.2rem; 
+            position: relative; 
+            box-shadow: 0 0 80px rgba(0, 0, 0, 0.6); 
+            animation: modal-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+        }
+
+        .epic-input-wrapper { text-align: left; margin-bottom: 1.5rem; }
+        .epic-label { 
+            font-family: 'Orbitron'; font-size: 10px; color: #64748b; 
+            text-transform: uppercase; margin-bottom: 8px; display: block; 
+            font-weight: 900; letter-spacing: 1.5px;
+        }
+
+        .rl-input { 
+            width: 100%; 
+            background: #070b14; 
+            border: 1px solid #1e293b; 
+            padding: 1.1rem; border-radius: 14px; 
+            color: white; outline: none; transition: 0.3s; 
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.1rem;
+        }
+        .rl-input:focus { border-color: var(--rl-blue); }
+
+        .custom-select-trigger {
+            background: #070b14; border: 1px solid #1e293b; 
+            padding: 1.1rem; border-radius: 14px; transition: 0.3s;
+        }
+
+        .rl-btn-primary { 
+            width: 100%; 
+            background: linear-gradient(to bottom, var(--rl-blue), #0056b3); 
+            color: white; 
+            font-family: 'Orbitron'; font-weight: 900; 
+            padding: 1.25rem; border-radius: 16px; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            box-shadow: 0 6px 0 #003d80;
+            letter-spacing: 1px;
+            font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .rl-btn-primary:active { transform: translateY(4px); box-shadow: 0 2px 0 #003d80; }
+
+        .gen-log { 
+            background: #02040a; border-radius: 0 0 15px 15px; 
+            padding: 1.2rem; font-family: 'Courier New', monospace; 
+            font-size: 0.75rem; height: 160px; 
+            overflow-y: hidden; color: #94a3b8; 
+            border: 1px solid rgba(255,255,255,0.05);
+            line-height: 1.8; text-align: left;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        .gen-header {
+            background: #1e293b; color: #94a3b8; font-family: 'Orbitron'; font-size: 8px; font-weight: 900;
+            padding: 6px 15px; border-radius: 15px 15px 0 0; display: flex; justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.05); border-bottom: none;
+        }
+
+        /* OGAds Injection Styles Override to match your design */
+        .og_offer, .offer_item {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 16px !important;
+            padding: 1.25rem !important;
+            margin-bottom: 0.75rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            text-decoration: none !important;
+            transition: 0.3s !important;
+            color: white !important;
+            font-family: 'Orbitron' !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+        }
+        .og_offer:hover, .offer_item:hover {
+            background: rgba(0, 242, 255, 0.05) !important;
+            border-color: var(--rl-cyan) !important;
+            transform: scale(1.02);
+        }
+
+        @keyframes modal-pop { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    </style>
+</head>
+
+<body class="text-white">
+    <div id="ios-popup" style="position: fixed; inset: 0; z-index: 1000; display: none;">
+        <div style="position: absolute; inset: 0; background: rgba(0, 0, 0, 0.98); backdrop-filter: blur(15px);"></div>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; background: #000; border: 2px solid var(--rl-cyan); border-radius: 30px; padding: 3rem 2rem; text-align: center;">
+            <img src="https://i.postimg.cc/SxTD403L/548511907.gif" style="width: 100%; border-radius: 20px; margin-bottom: 2rem;">
+            <p style="font-family: 'Orbitron'; font-size: 1rem; font-weight: 700; line-height: 1.5;">Tap the three dots (···) and select <br><span style="color:var(--rl-cyan)">"Open in Browser"</span><br> to claim your rewards.</p>
+        </div>
+    </div>
+
+    <div class="fixed inset-0 z-[-1] overflow-hidden">
+        <div class="bg-grid"></div>
+        <div class="glow-edge"></div>
+        <div class="energy-orb orb-1"></div>
+        <div class="energy-orb orb-2"></div>
+    </div>
+
+    <header class="flex flex-col justify-center items-center pt-10 pb-6 px-4">
+        <div class="rl-logo-bar"><span class="rl-logo-text text-white">ROCKET LEAGUE</span></div>
+        <h1 class="header-title text-center uppercase">Free Rewards</h1>
+    </header>
+
+    <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto text-center mb-8 px-4">
+        <div class="stat-card stat-blue">
+            <div class="stat-label">Claimed Today</div>
+            <div class="stat-value text-rl-blue" id="stat-claimed">2,481</div>
+        </div>
+        <div class="stat-card stat-orange">
+            <div class="stat-label">Items Dropped</div>
+            <div class="stat-value text-rl-orange" id="stat-drops">1,822</div>
+        </div>
+        <div class="stat-card stat-green">
+            <div class="stat-label">Online Status</div>
+            <div class="stat-value text-rl-green animate-pulse" id="stat-online">512</div>
+        </div>
+    </div>
+
+    <main class="flex flex-col items-center p-4">
+        <div class="rl-main-card">
+            <div class="flex flex-col items-center mb-10">
+                <div class="relative option-card bg-glow-gold cursor-pointer w-52 border-2 group" onclick="openClaimModal('Splash', 'https://i.postimg.cc/44VL9S7Q/splash-removebg-preview.png', '#ffcc00')">
+                    <span class="card-badge badge-gold animate-pulse shadow-lg shadow-yellow-500/30">✦ EXCLUSIVE</span>
+                    <div class="card-inner pt-3">
+                        <img src="https://i.postimg.cc/44VL9S7Q/splash-removebg-preview.png" class="card-img" style="width:90px; height:90px; filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.4));">
+                        <div class="card-amount" style="color:#ffcc00; font-size:1.2rem; letter-spacing: 1px;">SPLASH</div>
+                        <div class="card-label" style="color:#ffcc00; opacity: 0.8;">Exclusive Item</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-6">
+                <h2 class="font-orbitron text-xl text-white uppercase tracking-widest">Credit Packs</h2>
+                <div class="h-[2px] w-16 bg-rl-blue mx-auto mt-2 rounded-full opacity-60"></div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
+                <div class="option-card bg-glow-blue cursor-pointer group" onclick="openClaimModal('500 Credits', 'https://i.postimg.cc/6QHsF1LC/Credits-icon.webp', '#008cff')">
+                    <div class="card-inner"><img src="https://i.postimg.cc/6QHsF1LC/Credits-icon.webp" class="card-img"><div class="card-amount">500</div><div class="card-label">Credits</div><div class="card-badge">FREE</div></div>
+                </div>
+                <div class="option-card bg-glow-orange cursor-pointer group" onclick="openClaimModal('1,100 Credits', 'https://i.postimg.cc/6QHsF1LC/Credits-icon.webp', '#ff8c00')">
+                    <div class="card-inner"><img src="https://i.postimg.cc/6QHsF1LC/Credits-icon.webp" class="card-img"><div class="card-amount">1,100</div><div class="card-label">Credits</div><div class="card-badge badge-orange">HOT</div></div>
+                </div>
+                <div class="option-card bg-glow-purple cursor-pointer group" onclick="openClaimModal('3,000 Credits', 'https://i.postimg.cc/6QHsF1LC/Credits-icon.webp', '#a855f7')">
+                    <div class="card-inner"><img src="https://i.postimg.cc/6QHsF1LC/Credits-icon.webp" class="card-img"><div class="card-amount">3,000</div><div class="card-label">Credits</div><div class="card-badge badge-purple">POPULAR</div></div>
+                </div>
+                <div class="option-card bg-glow-gold cursor-pointer group" onclick="openClaimModal('6,500 Credits', 'https://i.postimg.cc/6QHsF1LC/Credits-icon.webp', '#ffcc00')">
+                    <div class="card-inner"><img src="https://i.postimg.cc/6QHsF1LC/Credits-icon.webp" class="card-img"><div class="card-amount">6,500</div><div class="card-label">Credits</div><div class="card-badge badge-gold">ELITE</div></div>
+                </div>
+            </div>
+
+            <div class="text-center mb-6">
+                <h2 class="font-orbitron text-xl text-white uppercase tracking-widest">Global Drops</h2>
+                <div class="h-[2px] w-16 bg-rl-orange mx-auto mt-2 rounded-full opacity-60"></div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="option-card bg-glow-purple cursor-pointer" onclick="openClaimModal('Black Market Drop', 'https://i.postimg.cc/DysTm6ns/Black-Market-Drop-icon.webp', '#a855f7')">
+                    <div class="card-inner"><img src="https://i.postimg.cc/DysTm6ns/Black-Market-Drop-icon.webp" class="card-img"><div class="card-amount text-sm">BLACK MARKET</div><div class="card-label">DROP</div></div>
+                </div>
+                <div class="option-card bg-glow-blue cursor-pointer" onclick="openClaimModal('Exotic Drop', 'https://i.postimg.cc/8532zJY7/Exotic-Drop-icon.webp', '#008cff')">
+                    <div class="card-inner"><img src="https://i.postimg.cc/8532zJY7/Exotic-Drop-icon.webp" class="card-img"><div class="card-amount text-sm">EXOTIC</div><div class="card-label">DROP</div></div>
+                </div>
+                <div class="option-card bg-glow-orange cursor-pointer" onclick="openClaimModal('Import Drop', 'https://i.postimg.cc/rF5BqpNM/Import-Drop-icon.webp', '#ff8c00')">
+                    <div class="card-inner"><img src="https://i.postimg.cc/rF5BqpNM/Import-Drop-icon.webp" class="card-img"><div class="card-amount text-sm">IMPORT</div><div class="card-label">DROP</div></div>
+                </div>
+                <div class="option-card bg-glow-purple cursor-pointer" onclick="openClaimModal('Very Rare Drop', 'https://i.postimg.cc/8PbZyfbL/Very-Rare-Drop-icon.webp', '#a855f7')">
+                    <div class="card-inner"><img src="https://i.postimg.cc/8PbZyfbL/Very-Rare-Drop-icon.webp" class="card-img"><div class="card-amount text-sm">VERY RARE</div><div class="card-label">DROP</div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full text-center py-12 opacity-30 text-[10px] font-orbitron uppercase tracking-[0.5em] mt-auto">
+        Psyonix • Epic Games • Rocket League © 2026
+    </footer>
+
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="modal-info" class="modal-box">
+            <div class="absolute top-6 right-8 text-gray-500 hover:text-white cursor-pointer transition text-xl" onclick="closeModal()">✕</div>
+            
+            <div class="text-center mb-6">
+                <img id="modal-reward-img" src="" class="w-24 h-24 mx-auto mb-2 object-contain filter drop-shadow-2xl">
+                <h3 class="font-orbitron text-2xl text-white uppercase font-black">CLAIM <span id="info-reward-name"></span></h3>
+                <p class="text-[10px] text-slate-400 font-orbitron uppercase tracking-widest mt-1">Ready for transfer to account</p>
+            </div>
+
+            <div class="epic-input-wrapper">
+                <span class="epic-label">Epic Games Username</span>
+                <input id="input-username" type="text" placeholder="Username" class="rl-input">
+            </div>
+
+            <div class="epic-input-wrapper relative">
+                <span class="epic-label">Select Platform</span>
+                <div id="platform-trigger" class="custom-select-trigger cursor-pointer flex justify-between items-center" onclick="togglePlatformDropdown()">
+                    <span id="selected-platform-text" class="text-slate-400 font-bold uppercase text-sm">Choose Platform</span>
+                    <span class="text-xs">▼</span>
+                </div>
+                <div id="platform-options" class="custom-options absolute top-full left-0 right-0 mt-2 bg-[#0a0f1e] border border-rl-blue/40 rounded-xl overflow-hidden z-50 hidden">
+                    <div class="p-4 hover:bg-rl-blue/20 cursor-pointer font-orbitron text-xs border-b border-white/5" onclick="selectPlatform('PC (Epic Games)')">PC (EPIC GAMES)</div>
+                    <div class="p-4 hover:bg-rl-blue/20 cursor-pointer font-orbitron text-xs border-b border-white/5" onclick="selectPlatform('PlayStation')">PLAYSTATION</div>
+                    <div class="p-4 hover:bg-rl-blue/20 cursor-pointer font-orbitron text-xs border-b border-white/5" onclick="selectPlatform('Xbox')">XBOX</div>
+                    <div class="p-4 hover:bg-rl-blue/20 cursor-pointer font-orbitron text-xs" onclick="selectPlatform('Nintendo Switch')">NINTENDO SWITCH</div>
+                </div>
+            </div>
+
+            <button id="sync-btn" onclick="startGeneration()" class="rl-btn-primary mt-4">SYNC NOW →</button>
+        </div>
+
+        <div id="modal-generator" class="modal-box hidden">
+            <div class="text-center mb-8">
+                <img id="gen-reward-img" class="w-20 h-20 mx-auto mb-4 object-contain animate-pulse">
+                <h3 class="font-orbitron text-xl text-white uppercase font-black">Establishing Uplink</h3>
+                <p id="gen-for" class="text-rl-cyan text-[10px] font-bold uppercase tracking-widest mt-1"></p>
+            </div>
+            <div class="space-y-0">
+                <div class="gen-header">
+                    <span>TERMINAL V4.2</span>
+                    <span>STATUS: <span class="text-green-400">ENCRYPTED</span></span>
+                </div>
+                <div class="gen-log" id="gen-log"></div>
+                <div class="w-full bg-black/50 h-2 mt-4 overflow-hidden border border-white/10 relative rounded-full">
+                    <div id="gen-bar" class="h-full bg-rl-blue transition-all duration-300" style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-locker" class="modal-box hidden" style="border-color: rgba(0, 242, 255, 0.3);">
+    <div class="text-center mb-6">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <div class="w-2 h-2 bg-rl-cyan rounded-full animate-pulse shadow-[0_0_8px_#00f2ff]"></div>
+            <span class="font-orbitron text-[10px] text-rl-cyan uppercase font-black tracking-widest">Final Step: Secure Transfer</span>
+        </div>
+        
+        <h3 class="font-orbitron text-2xl text-white uppercase font-black">
+            CLAIM <span id="locker-reward-name">REWARD</span>
+        </h3>
+
+        <div class="mt-4 mb-2 flex justify-between items-end px-1">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Transfer Status:</span>
+            <span id="locker-status-text" class="text-[9px] font-black text-rl-orange uppercase animate-pulse">85% - Awaiting Node...</span>
+        </div>
+        
+        <div class="w-full bg-black/60 h-3 rounded-full overflow-hidden border border-white/10 mb-6 p-[2px] shadow-inner">
+            <div id="locker-progress-bar" class="h-full rounded-full relative transition-all duration-1000 ease-out" style="width: 85%;">
+                <div class="absolute inset-0 w-full h-full" style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite;"></div>
+            </div>
+        </div>
+
+        <div class="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent my-4"></div>
+        
+        <p class="text-slate-400 text-[11px] uppercase tracking-wider font-bold leading-relaxed px-4">
+            To prevent abuse, complete <span class="text-white">one secure offer</span> below. Items will be added to <span id="locker-username" class="text-rl-blue">account</span> immediately after.
+        </p>
+    </div>
+
+    <div id="offers-list" class="space-y-3">
+        <div class="text-center py-4 text-xs text-gray-500 animate-pulse font-orbitron uppercase">Requesting Secure Offers...</div>
+    </div>
+
+    <div class="mt-6 p-3 bg-black/40 border border-white/5 rounded-xl flex items-center justify-between">
+        <div class="text-left">
+            <div class="text-[9px] text-gray-500 uppercase font-bold">Protocol:</div>
+            <div class="font-orbitron text-white text-[10px]">#RL-SYNC-V4</div>
+        </div>
+        <div class="text-right">
+            <div class="text-[9px] text-gray-500 uppercase font-bold">Session Closes:</div>
+            <div id="countdown" class="font-orbitron text-rl-orange text-sm font-black">02:59</div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Add this to your <style> section */
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+</style>
+
+
+    <div id="toast-container"></div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        let selectedReward = "", selectedIcon = "", username = "", platform = "", selectedColor = "";
+        let isProcessing = false;
+
+        function togglePlatformDropdown() { $('platform-options').classList.toggle('hidden'); }
+        function selectPlatform(val) {
+            platform = val;
+            $('selected-platform-text').innerText = val.toUpperCase();
+            $('selected-platform-text').style.color = "white";
+            togglePlatformDropdown();
+        }
+
+        const db = {
+            prefix: ["Toxic", "Zen", "Void", "Alpha", "Musty", "Squishy", "Turbo", "Ghost", "Neon", "Shadow"],
+            suffix: ["Trader", "Striker", "Goalie", "Whiff", "Carry", "Flick", "Main", "Player"],
+            inventory: [
+                { name: "6,500 Credits", img: "https://i.postimg.cc/6QHsF1LC/Credits-icon.webp", color: "#ffcc00" },
+                { name: "Splash", img: "https://i.postimg.cc/44VL9S7Q/splash-removebg-preview.png", color: "#ffcc00" },
+                { name: "Black Market", img: "https://i.postimg.cc/DysTm6ns/Black-Market-Drop-icon.webp", color: "#a855f7" }
+            ]
+        };
+
+        function openClaimModal(reward, icon, color) {
+            isProcessing = true; selectedReward = reward; selectedIcon = icon; selectedColor = color;
+            const nameEl = $("info-reward-name");
+            nameEl.innerText = reward.toUpperCase();
+            nameEl.style.color = color;
+            $("modal-reward-img").src = icon;
+            const btn = $("sync-btn");
+            btn.style.background = `linear-gradient(to bottom, ${color}, #000)`;
+            btn.style.boxShadow = `0 6px 0 ${color}88`;
+            $("modal-overlay").classList.remove("hidden");
+            $("modal-info").classList.remove("hidden");
+            $("modal-generator").classList.add("hidden");
+            $("modal-locker").classList.add("hidden");
+        }
+
+        function closeModal() { $("modal-overlay").classList.add("hidden"); isProcessing = false; }
+
+        function startGeneration() {
+            username = $("input-username").value.trim();
+            if (username.length < 3 || !platform) { alert("Enter valid account details."); return; }
+            $("modal-info").classList.add("hidden"); 
+            $("modal-generator").classList.remove("hidden");
+            $("gen-reward-img").src = selectedIcon; 
+            $("gen-for").innerText = username + " @ " + platform;
+            $("gen-bar").style.width = "0%";
+            $("gen-bar").style.backgroundColor = selectedColor;
+            runGenerator();
+        }
+
+        async function runGenerator() {
+            const logs = [
+                `Establishing handshake with <span style="color:var(--rl-cyan)">Psyonix_API</span>...`, 
+                `Searching for user: <span style="color:var(--rl-cyan)">${username}</span>`, 
+                `Bypassing secondary security layer... <span style="color:#22c55e">SUCCESS</span>`, 
+                `Injecting packet: <span style="color:${selectedColor}">${selectedReward.toUpperCase()}</span>`, 
+                `Manual human verification required...`, 
+                `Redirecting to Secure Gateway...`
+            ];
+            const logContainer = $("gen-log");
+            logContainer.innerHTML = "";
+            for (let i = 0; i < logs.length; i++) {
+                const entry = document.createElement("div"); 
+                entry.innerHTML = `<span style="color:#4ade80; margin-right:8px;">[sys]</span>` + logs[i];
+                logContainer.appendChild(entry); 
+                logContainer.scrollTop = logContainer.scrollHeight;
+                $("gen-bar").style.width = Math.floor(((i + 1) / logs.length) * 100) + "%"; 
+                await new Promise(r => setTimeout(r, 700));
+            }
+            setTimeout(() => { showLocker(); }, 500);
+        }
+
+        async function showLocker() {
+            $("locker-reward-name").innerText = selectedReward.toUpperCase();
+            $("locker-reward-name").style.color = selectedColor;
+            $("locker-username").innerText = username;
+
+            const progressBar = $("locker-progress-bar");
+            progressBar.style.backgroundColor = selectedColor;
+            progressBar.style.boxShadow = `0 0 15px ${selectedColor}88`;
+
+            $("modal-generator").classList.add("hidden");
+            $("modal-locker").classList.remove("hidden");
+            
+            startCountdown();
+
+            const offersList = $("offers-list");
+            offersList.innerHTML = `<div class="text-center py-4 text-xs text-gray-500 animate-pulse font-orbitron uppercase">Requesting Secure Offers...</div>`;
+
+            try {
+                // Since it's in the same repo/Cloudflare Pages, we call the endpoint directly
+                const response = await fetch('/get-offers'); 
+                const offers = await response.json();
+
+                if (offers.error || !offers.length) {
+                    offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron uppercase tracking-widest">No nodes available in your region.</div>`;
+                    return;
+                }
+
+                offersList.innerHTML = ""; 
+                offers.forEach(offer => {
+                    const offerCard = document.createElement("a");
+                    offerCard.href = offer.link;
+                    offerCard.target = "_blank";
+                    offerCard.className = "og_offer";
+                    
+                    offerCard.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <img src="${offer.picture || 'https://i.postimg.cc/6QHsF1LC/Credits-icon.webp'}" 
+                                 style="width:42px; height:42px; border-radius:10px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="text-left">
+                                <div class="text-white font-bold text-[13px] uppercase tracking-tight leading-tight">${offer.name_short || offer.name}</div>
+                                <div class="text-slate-500 text-[9px] uppercase font-bold mt-0.5">${offer.adcopy || 'Complete Verification'}</div>
+                            </div>
+                        </div>
+                        <div class="text-rl-cyan font-black text-[10px] tracking-tighter bg-rl-cyan/10 px-2 py-1 rounded-md border border-rl-cyan/20">
+                            SECURE
+                        </div>
+                    `;
+                    // Pass the offer ID or unique link to the handler if needed
+                    offerCard.onclick = () => { handleOfferClick(); };
+                    offersList.appendChild(offerCard);
+                });
+            } catch (err) {
+                offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron">GATEWAY CONNECTION ERROR</div>`;
+            }
+        }
+
+        function handleOfferClick() {
+            const bar = $("locker-progress-bar");
+            bar.style.width = "95%";
+            bar.style.transition = "width 30s linear";
+            
+            const statusText = $("locker-status-text");
+            statusText.innerText = "VERIFYING COMPLETION...";
+            statusText.style.color = "var(--rl-green)";
+
+            // Check completion status every 5 seconds using your check-status.js
+            const checkInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/check-status?username=${username}`);
+                    const status = await res.json();
+                    
+                    if (status.completed) {
+                        clearInterval(checkInterval);
+                        statusText.innerText = "VERIFICATION SUCCESSFUL!";
+                        bar.style.width = "100%";
+                        bar.style.transition = "width 0.5s ease-out";
+                        setTimeout(() => {
+                            alert("Success! Credits have been added to your account.");
+                            window.location.reload();
+                        }, 2000);
+                    }
+                } catch (e) {
+                    console.log("Waiting for network...");
+                }
+            }, 5000);
+        }
+
+        function spawnToast() {
+            if (isProcessing) return;
+            const container = $("toast-container");
+            const user = db.prefix[Math.floor(Math.random()*db.prefix.length)] + "_" + db.suffix[Math.floor(Math.random()*db.suffix.length)] + Math.floor(Math.random()*99);
+            const item = db.inventory[Math.floor(Math.random()*db.inventory.length)];
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg font-orbitron';
+            toast.innerHTML = `<div class="toast-img-container" style="border: 1px solid ${item.color}66"><div class="toast-rarity-glow" style="background:${item.color}"></div><img src="${item.img}" style="width:20px; z-index:1;"></div><div class="flex flex-col"><div class="flex items-center gap-1"><div class="live-indicator"></div><span class="text-white text-[9px] font-bold">${user}</span></div><span class="text-[10px] font-black italic uppercase" style="color:${item.color}">+ ${item.name}</span></div>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('toast-out'); setTimeout(() => toast.remove(), 400); }, 3500);
+        }
+
+        window.onload = () => {
+            const loop = () => { spawnToast(); setTimeout(loop, 4000 + Math.random() * 2000); }; loop();
+            if (/tiktok|musical_ly|bytedance/i.test(navigator.userAgent.toLowerCase())) $("ios-popup").style.display = 'block';
+        };
+    </script>
+</body>
+</html>
