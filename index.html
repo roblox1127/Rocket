@@ -548,7 +548,6 @@
         }
 
         async function showLocker() {
-            // 1. Setup UI elements
             $("locker-reward-name").innerText = selectedReward.toUpperCase();
             $("locker-reward-name").style.color = selectedColor;
             $("locker-username").innerText = username;
@@ -557,30 +556,28 @@
             progressBar.style.backgroundColor = selectedColor;
             progressBar.style.boxShadow = `0 0 15px ${selectedColor}88`;
 
-            // 2. Switch Screens
             $("modal-generator").classList.add("hidden");
             $("modal-locker").classList.remove("hidden");
             
-            startCountdown();
-
-            // 3. The Actual Call to your get-offers.js
             const offersList = $("offers-list");
             offersList.innerHTML = `<div class="text-center py-4 text-xs text-gray-500 animate-pulse font-orbitron uppercase">Scanning Secure Nodes...</div>`;
 
             try {
-                // Cloudflare Pages maps /functions/get-offers.js to /get-offers
                 const response = await fetch('/get-offers'); 
-                const offers = await response.json();
+                const data = await response.json();
 
-                if (offers.error || !offers.length) {
-                    offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron uppercase">No secure nodes available.</div>`;
+                // If backend returns { error: "..." } or an empty array
+                if (data.error || !data.length) {
+                    offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron uppercase">${data.error || "No secure nodes available for your device."}</div>`;
                     return;
                 }
 
                 offersList.innerHTML = ""; 
-                offers.forEach(offer => {
+                
+                // data is now a clean array of offers from your backend
+                data.forEach(offer => {
                     const offerCard = document.createElement("a");
-                    offerCard.href = offer.link;
+                    offerCard.href = offer.link || offer.tracking_url;
                     offerCard.target = "_blank";
                     offerCard.className = "og_offer";
                     
@@ -602,8 +599,8 @@
                 });
 
             } catch (err) {
-                console.error(err);
-                offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron uppercase">Gateway Connection Failed</div>`;
+                console.error("API error:", err);
+                offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron uppercase">Gateway Connection Failed. Please reload page.</div>`;
             }
         }
 
