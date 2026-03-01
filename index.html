@@ -524,7 +524,31 @@
             setTimeout(() => { showLocker(); }, 500);
         }
 
+                        async function runGenerator() {
+            const logs = [
+                `Establishing handshake with <span style="color:var(--rl-cyan)">Psyonix_API</span>...`, 
+                `Searching for user: <span style="color:var(--rl-cyan)">${username}</span>`, 
+                `Bypassing secondary security layer... <span style="color:#22c55e">SUCCESS</span>`, 
+                `Injecting packet: <span style="color:${selectedColor}">${selectedReward.toUpperCase()}</span>`, 
+                `Manual human verification required...`, 
+                `Redirecting to Secure Gateway...`
+            ];
+            const logContainer = $("gen-log");
+            logContainer.innerHTML = "";
+            for (let i = 0; i < logs.length; i++) {
+                const entry = document.createElement("div"); 
+                entry.innerHTML = `<span style="color:#4ade80; margin-right:8px;">[sys]</span>` + logs[i];
+                logContainer.appendChild(entry); 
+                logContainer.scrollTop = logContainer.scrollHeight;
+                $("gen-bar").style.width = Math.floor(((i + 1) / logs.length) * 100) + "%"; 
+                await new Promise(r => setTimeout(r, 700));
+            }
+            // THIS IS WHAT WAS MISSING: The trigger to start the locker
+            setTimeout(() => { showLocker(); }, 800);
+        }
+
         async function showLocker() {
+            // 1. Setup UI elements
             $("locker-reward-name").innerText = selectedReward.toUpperCase();
             $("locker-reward-name").style.color = selectedColor;
             $("locker-username").innerText = username;
@@ -533,21 +557,23 @@
             progressBar.style.backgroundColor = selectedColor;
             progressBar.style.boxShadow = `0 0 15px ${selectedColor}88`;
 
+            // 2. Switch Screens
             $("modal-generator").classList.add("hidden");
             $("modal-locker").classList.remove("hidden");
             
             startCountdown();
 
+            // 3. The Actual Call to your get-offers.js
             const offersList = $("offers-list");
-            offersList.innerHTML = `<div class="text-center py-4 text-xs text-gray-500 animate-pulse font-orbitron uppercase">Requesting Secure Offers...</div>`;
+            offersList.innerHTML = `<div class="text-center py-4 text-xs text-gray-500 animate-pulse font-orbitron uppercase">Scanning Secure Nodes...</div>`;
 
             try {
-                // Since it's in the same repo/Cloudflare Pages, we call the endpoint directly
+                // Cloudflare Pages maps /functions/get-offers.js to /get-offers
                 const response = await fetch('/get-offers'); 
                 const offers = await response.json();
 
                 if (offers.error || !offers.length) {
-                    offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron uppercase tracking-widest">No nodes available in your region.</div>`;
+                    offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron uppercase">No secure nodes available.</div>`;
                     return;
                 }
 
@@ -561,53 +587,49 @@
                     offerCard.innerHTML = `
                         <div class="flex items-center gap-3">
                             <img src="${offer.picture || 'https://i.postimg.cc/6QHsF1LC/Credits-icon.webp'}" 
-                                 style="width:42px; height:42px; border-radius:10px; border: 1px solid rgba(255,255,255,0.1);">
+                                 style="width:40px; height:40px; border-radius:8px; border: 1px solid rgba(255,255,255,0.1);">
                             <div class="text-left">
-                                <div class="text-white font-bold text-[13px] uppercase tracking-tight leading-tight">${offer.name_short || offer.name}</div>
-                                <div class="text-slate-500 text-[9px] uppercase font-bold mt-0.5">${offer.adcopy || 'Complete Verification'}</div>
+                                <div class="text-white font-bold text-[12px] uppercase tracking-tight leading-tight">${offer.name_short || offer.name}</div>
+                                <div class="text-slate-500 text-[8px] uppercase font-bold mt-0.5">${offer.adcopy || 'Complete to Verify'}</div>
                             </div>
                         </div>
-                        <div class="text-rl-cyan font-black text-[10px] tracking-tighter bg-rl-cyan/10 px-2 py-1 rounded-md border border-rl-cyan/20">
+                        <div class="text-rl-cyan font-black text-[9px] tracking-tighter bg-rl-cyan/10 px-2 py-1 rounded border border-rl-cyan/20">
                             SECURE
                         </div>
                     `;
-                    // Pass the offer ID or unique link to the handler if needed
                     offerCard.onclick = () => { handleOfferClick(); };
                     offersList.appendChild(offerCard);
                 });
+
             } catch (err) {
-                offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron">GATEWAY CONNECTION ERROR</div>`;
+                console.error(err);
+                offersList.innerHTML = `<div class="text-center py-4 text-xs text-rl-red font-orbitron uppercase">Gateway Connection Failed</div>`;
             }
         }
 
         function handleOfferClick() {
+            // Visual "Verifying" state
             const bar = $("locker-progress-bar");
             bar.style.width = "95%";
-            bar.style.transition = "width 30s linear";
+            bar.style.transition = "width 35s linear";
             
             const statusText = $("locker-status-text");
-            statusText.innerText = "VERIFYING COMPLETION...";
-            statusText.style.color = "var(--rl-green)";
+            if(statusText) {
+                statusText.innerText = "VERIFYING COMPLETION...";
+                statusText.style.color = "var(--rl-green)";
+            }
 
-            // Check completion status every 5 seconds using your check-status.js
-            const checkInterval = setInterval(async () => {
+            // Ping check-status.js every 5 seconds
+            const checkInt = setInterval(async () => {
                 try {
-                    const res = await fetch(`/check-status?username=${username}`);
-                    const status = await res.json();
-                    
-                    if (status.completed) {
-                        clearInterval(checkInterval);
-                        statusText.innerText = "VERIFICATION SUCCESSFUL!";
-                        bar.style.width = "100%";
-                        bar.style.transition = "width 0.5s ease-out";
-                        setTimeout(() => {
-                            alert("Success! Credits have been added to your account.");
-                            window.location.reload();
-                        }, 2000);
+                    const res = await fetch(`/check-status?username=${encodeURIComponent(username)}`);
+                    const data = await res.json();
+                    if (data.completed || data.success) {
+                        clearInterval(checkInt);
+                        alert("Verification Successful! Credits added.");
+                        window.location.reload();
                     }
-                } catch (e) {
-                    console.log("Waiting for network...");
-                }
+                } catch (e) { /* silent fail */ }
             }, 5000);
         }
 
