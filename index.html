@@ -264,7 +264,19 @@
         font-size: 1.25rem !important; /* Prevent text overflow */
     }
 }
-
+#offers-list {
+    max-height: 350px; /* Limits height on small screens */
+    overflow-y: auto; /* Adds a scrollbar if there are many offers */
+    padding-right: 5px;
+}
+/* Style the scrollbar to match your RL theme */
+#offers-list::-webkit-scrollbar {
+    width: 4px;
+}
+#offers-list::-webkit-scrollbar-thumb {
+    background: var(--rl-blue);
+    border-radius: 10px;
+}
  </style>
 </head>
 
