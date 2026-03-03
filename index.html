@@ -248,8 +248,24 @@
             transform: scale(1.02);
         }
 
-        @keyframes modal-pop { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-    </style>
+       @keyframes modal-pop { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+   @media (max-width: 480px) {
+    .modal-box {
+        padding: 1.5rem 1rem !important; /* Reduce padding to save space */
+        width: 95% !important; /* Take up more horizontal space on mobile */
+        border-radius: 25px !important; /* Slightly smaller corners */
+    }
+
+    .og_offer {
+        padding: 0.8rem !important; /* Make offer rows more compact */
+    }
+
+    #locker-reward-name {
+        font-size: 1.25rem !important; /* Prevent text overflow */
+    }
+}
+
+ </style>
 </head>
 
 <body class="text-white">
@@ -447,7 +463,6 @@
         100% { transform: translateX(100%); }
     }
 </style>
-
 
     <div id="toast-container"></div>
 
